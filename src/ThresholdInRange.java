@@ -23,6 +23,7 @@ public class ThresholdInRange {
     private static final String HIGH_H_NAME = "High H";
     private static final String HIGH_S_NAME = "High S";
     private static final String HIGH_V_NAME = "High V";
+    private JTextField textFieldValues;
     private JSlider sliderLowH;
     private JSlider sliderHighH;
     private JSlider sliderLowS;
@@ -114,6 +115,9 @@ public class ThresholdInRange {
         JPanel sliderPanel = new JPanel();
         sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.PAGE_AXIS));
 
+        textFieldValues = new JTextField();
+        sliderPanel.add(textFieldValues);
+
         //! [trackbar]
         sliderPanel.add(new JLabel(LOW_H_NAME));
         sliderLowH = new JSlider(0, MAX_VALUE_H, 0);
@@ -171,6 +175,7 @@ public class ThresholdInRange {
                 JSlider source = (JSlider) e.getSource();
                 int valH = Math.min(sliderHighH.getValue()-1, source.getValue());
                 sliderLowH.setValue(valH);
+                updateValues();
             }
         });
         //! [low]
@@ -181,6 +186,7 @@ public class ThresholdInRange {
                 JSlider source = (JSlider) e.getSource();
                 int valH = Math.max(source.getValue(), sliderLowH.getValue()+1);
                 sliderHighH.setValue(valH);
+                updateValues();
             }
         });
         //! [high]
@@ -190,6 +196,7 @@ public class ThresholdInRange {
                 JSlider source = (JSlider) e.getSource();
                 int valS = Math.min(sliderHighS.getValue()-1, source.getValue());
                 sliderLowS.setValue(valS);
+                updateValues();
             }
         });
         sliderHighS.addChangeListener(new ChangeListener() {
@@ -198,6 +205,7 @@ public class ThresholdInRange {
                 JSlider source = (JSlider) e.getSource();
                 int valS = Math.max(source.getValue(), sliderLowS.getValue()+1);
                 sliderHighS.setValue(valS);
+                updateValues();
             }
         });
         sliderLowV.addChangeListener(new ChangeListener() {
@@ -206,6 +214,7 @@ public class ThresholdInRange {
                 JSlider source = (JSlider) e.getSource();
                 int valV = Math.min(sliderHighV.getValue()-1, source.getValue());
                 sliderLowV.setValue(valV);
+                updateValues();
             }
         });
         sliderHighV.addChangeListener(new ChangeListener() {
@@ -214,6 +223,7 @@ public class ThresholdInRange {
                 JSlider source = (JSlider) e.getSource();
                 int valV = Math.max(source.getValue(), sliderLowV.getValue()+1);
                 sliderHighV.setValue(valV);
+                updateValues();
             }
         });
 
@@ -224,6 +234,13 @@ public class ThresholdInRange {
         imgDetectionLabel = new JLabel(new ImageIcon(img));
         framePanel.add(imgDetectionLabel);
         pane.add(framePanel, BorderLayout.CENTER);
+        updateValues();
+    }
+
+    private void updateValues() {
+        String currentValues = "(" + sliderLowH.getValue() + "," + sliderLowS.getValue() + "," + sliderLowV.getValue() + ") " +
+                "(" + sliderHighH.getValue() + "," + sliderHighS.getValue() + "," + sliderHighV.getValue() + ")";
+        textFieldValues.setText(currentValues);
     }
 
     private void update(Mat imgCapture, Mat imgThresh) {

@@ -31,6 +31,7 @@ public class VideoBgDiffDetect {
 
         capture.set(Videoio.CAP_PROP_EXPOSURE, -2);
 
+        // first frame for background
         capture.read(bgFrame);
         Imgproc.cvtColor(bgFrame, grayBg, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(grayBg, grayBg,new Size(21,21),0);

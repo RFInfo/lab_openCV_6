@@ -2,6 +2,7 @@ import org.opencv.core.*;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +24,32 @@ public class VideoColorObjDetect {
         Scalar redLower = new Scalar(0, 50, 0);
         Scalar redUpper = new Scalar(10, 255, 255);
 
-        Mat dilateElem = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(15,15));
-        Mat erodeElem = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(15,15));
+//        Scalar redLower = new Scalar(4,80,40);
+//        Scalar redUpper = new Scalar(10,200,255);
+
+        Scalar redLower2 = new Scalar(170,50,0);
+        Scalar redUpper2 = new Scalar(180,255,255);
+
+        Mat dilateElem = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE,new Size(15,15));
+        Mat erodeElem = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,new Size(15,15));
 
         VideoCapture videoCapture = new VideoCapture(0);
         if(!videoCapture.isOpened()) return;
 
+        // 2^x // fix exposure // EXP_TIME = 2^(-EXP_VAL) // 0 to -13
+        videoCapture.set(Videoio.CAP_PROP_EXPOSURE, -1);
+//        videoCapture.set(Videoio.CAP_PROP_AUTO_EXPOSURE, 1);
+
+        double frameW = videoCapture.get(Videoio.CAP_PROP_FRAME_WIDTH);
+        double frameH = videoCapture.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+
+        System.out.println(frameW + "x" + frameH);
+
+        backgroundFrame = new Mat(new Size(frameW,frameH), CvType.CV_8UC3,new Scalar(128,0,0));
+
         int key=0;
         while(key != 27){
             if(!videoCapture.read(src)) break;
-
-            backgroundFrame = new Mat(src.size(), CvType.CV_8UC3,new Scalar(128,0,0));
 
             Imgproc.blur(src, blurFrame, new Size(9,9));
 
@@ -42,7 +58,7 @@ public class VideoColorObjDetect {
             Core.inRange(hsvFrame, redLower, redUpper, mask1);
 
             Imgproc.erode(mask1, mask1,erodeElem);
-            Imgproc.dilate(mask1, mask1,erodeElem);
+            Imgproc.dilate(mask1, mask1,dilateElem);
 
             HighGui.imshow("Mask1", mask1);
 
